@@ -1,22 +1,22 @@
 """
 AI Customer Support Bot (Telegram)
 ------------------------------------
-Usa ka customizable customer support chatbot para sa bisan unsang
-business (restaurant, clinic, shop, etc.) gamit ang Claude AI.
+A customizable customer support chatbot for any business
+(restaurant, clinic, shop, etc.) powered by Claude AI.
 
 Setup:
-    pip install python-telegram-bot anthropic --upgrade
+    pip install python-telegram-bot requests --upgrade
 
-    1. I-set ang imong Telegram Bot Token ug Anthropic API Key sa
-       environment variables (dili i-hardcode diri, para safe):
+    1. Set your Telegram Bot Token and Anthropic API Key as
+       environment variables (do not hardcode them here, for safety):
 
-       export TELEGRAM_BOT_TOKEN="imong_token_gikan_sa_BotFather"
-       export ANTHROPIC_API_KEY="imong_api_key"
+       export TELEGRAM_BOT_TOKEN="your_token_from_BotFather"
+       export ANTHROPIC_API_KEY="your_api_key"
 
-    2. I-edit ang business_info.json (o himuon kung wala pa) para
-       ma-customize sa specific business nga imong gi-demo.
+    2. Edit business_info.json (or let it auto-generate on first run)
+       to customize the bot for a specific business.
 
-    3. Pag-run:
+    3. Run:
        python support_bot.py
 """
 
@@ -45,29 +45,29 @@ BUSINESS_INFO_FILE = "business_info.json"
 
 ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
 
-# Kada user (chat_id) naa'y kaugalingong conversation history
+# Each user (chat_id) gets their own conversation history
 conversations = {}
-MAX_HISTORY = 10  # ka messages nga i-keep per user, para dili modako ang cost
+MAX_HISTORY = 10  # messages to keep per user, to keep token cost down
 
 
 def load_business_info():
-    """I-load ang business details - gikan ni ang 'knowledge' sa bot."""
+    """Load the business details - this is the bot's 'knowledge base'."""
     if os.path.exists(BUSINESS_INFO_FILE):
         with open(BUSINESS_INFO_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    # Default template kung wala pa gi-himo ang config
+    # Default template if the config file doesn't exist yet
     default = {
         "business_name": "Sample Restaurant",
-        "description": "Usa ka casual dining restaurant nga nag-serve og Filipino cuisine.",
-        "hours": "Lunes-Domingo, 10AM - 9PM",
+        "description": "A casual dining restaurant serving Filipino cuisine.",
+        "hours": "Monday-Sunday, 10AM - 9PM",
         "location": "Cebu City, Philippines",
         "contact": "0917-000-0000",
         "faq": [
-            {"q": "Naa ba moy delivery?", "a": "Oo, via Grab/Foodpanda ug direct call/text."},
-            {"q": "Naa moy vegetarian options?", "a": "Oo, naa mi'y pipila ka vegetarian dishes sa menu."},
+            {"q": "Do you offer delivery?", "a": "Yes, via Grab/Foodpanda or direct call/text."},
+            {"q": "Do you have vegetarian options?", "a": "Yes, we have several vegetarian dishes on the menu."},
         ],
-        "tone": "Friendly, helpful, professional. Taglish/Bisaya ok depende sa customer.",
+        "tone": "Friendly, helpful, professional.",
     }
     with open(BUSINESS_INFO_FILE, "w", encoding="utf-8") as f:
         json.dump(default, f, indent=2, ensure_ascii=False)
@@ -77,7 +77,7 @@ def load_business_info():
 def build_system_prompt(info):
     faq_text = "\n".join(f"Q: {item['q']}\nA: {item['a']}" for item in info["faq"])
 
-    return f"""Ikaw ang AI customer support assistant sa {info['business_name']}.
+    return f"""You are the AI customer support assistant for {info['business_name']}.
 
 BUSINESS INFO:
 - Description: {info['description']}
@@ -90,13 +90,14 @@ FREQUENTLY ASKED QUESTIONS:
 
 TONE: {info['tone']}
 
-MGA PATAKARAN:
-- Tubaga lang base sa info nga naa sa taas. Kung wala ka kabalo sa tubag, ingna
-  nga i-refer nimo sa staff/contact number - ayaw pag-imbento og information.
-  - Sulti nga klaro ug summarized ang imong tubag, dili sobra ka taas.
-- Kung mangutana ang customer og bisan unsa nga dili related sa business
-  (e.g. general knowledge questions), politely i-redirect balik sa topic
-  sa business.
+RULES:
+- Only answer based on the information above. If you don't know the
+  answer, refer the customer to staff/the contact number - never
+  invent information.
+- Keep answers clear and concise, not overly long.
+- If the customer asks something unrelated to the business (e.g.
+  general knowledge questions), politely redirect back to the
+  business topic.
 """
 
 
@@ -106,9 +107,9 @@ SYSTEM_PROMPT = build_system_prompt(BUSINESS_INFO)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        f"Kumusta! Ako si {BUSINESS_INFO['business_name']} Assistant 🤖\n"
-        f"Pangutan-a ko bisan unsa bahin sa among business - menu, hours, "
-        f"location, o bisan unsa!"
+        f"Hi! I'm the {BUSINESS_INFO['business_name']} Assistant 🤖\n"
+        f"Ask me anything about our business - menu, hours, "
+        f"location, or anything else!"
     )
 
 
@@ -147,15 +148,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.error(f"Error: {e}")
         await update.message.reply_text(
-            "Pasensya, naay technical issue. Palihug sulayi pag-usab o "
-            f"i-contact direkta ang {BUSINESS_INFO['contact']}."
+            "Sorry, we're experiencing a technical issue. Please try again "
+            f"or contact us directly at {BUSINESS_INFO['contact']}."
         )
 
 
 def main():
     if not TELEGRAM_TOKEN or not ANTHROPIC_KEY:
-        print("ERROR: I-set una ang TELEGRAM_BOT_TOKEN ug ANTHROPIC_API_KEY "
-              "nga environment variables.")
+        print("ERROR: Please set the TELEGRAM_BOT_TOKEN and ANTHROPIC_API_KEY "
+              "environment variables first.")
         return
 
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
@@ -163,7 +164,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    print(f"Bot running para sa {BUSINESS_INFO['business_name']}...")
+    print(f"Bot running for {BUSINESS_INFO['business_name']}...")
     app.run_polling()
 
 

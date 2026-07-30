@@ -1,18 +1,18 @@
 {
   "business_name": "Sample Restaurant",
-  "description": "Usa ka casual dining restaurant nga nag-serve og Filipino cuisine.",
-  "hours": "Lunes-Domingo, 10AM - 9PM",
+  "description": "A casual dining restaurant serving Filipino cuisine.",
+  "hours": "Monday-Sunday, 10AM - 9PM",
   "location": "Cebu City, Philippines",
   "contact": "0917-000-0000",
   "faq": [
     {
-      "q": "Naa ba moy delivery?",
-      "a": "Oo, via Grab/Foodpanda ug direct call/text."
+      "q": "Do you offer delivery?",
+      "a": "Yes, via Grab/Foodpanda or direct call/text."
     },
     {
-      "q": "Naa moy vegetarian options?",
-      "a": "Oo, naa mi'y pipila ka vegetarian dishes sa menu."
+      "q": "Do you have vegetarian options?",
+      "a": "Yes, we have several vegetarian dishes on the menu."
     }
   ],
-  "tone": "Friendly, helpful, professional. Taglish/Bisaya ok depende sa customer."
+  "tone": "Friendly, helpful, professional."
 }
