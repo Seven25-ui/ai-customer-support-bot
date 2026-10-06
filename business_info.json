@@ -1,18 +1,38 @@
 {
   "business_name": "Sample Restaurant",
-  "description": "A casual dining restaurant serving Filipino cuisine.",
+  "description": "A casual dining restaurant serving Filipino cuisine. (Demo configuration)",
   "hours": "Monday-Sunday, 10AM - 9PM",
   "location": "Cebu City, Philippines",
   "contact": "0917-000-0000",
   "faq": [
     {
       "q": "Do you offer delivery?",
-      "a": "Yes, via Grab/Foodpanda or direct call/text."
+      "a": "Yes, via Grab/Foodpanda or direct call/text to 0917-000-0000."
     },
     {
       "q": "Do you have vegetarian options?",
-      "a": "Yes, we have several vegetarian dishes on the menu."
+      "a": "Yes, we have several vegetarian dishes on the menu, such as pinakbet and ensaladang talong."
+    },
+    {
+      "q": "Do I need a reservation?",
+      "a": "Walk-ins are welcome. For groups of 8 or more, please call or text us ahead."
+    },
+    {
+      "q": "Do you accept GCash or credit cards?",
+      "a": "We accept cash, GCash, and major credit cards."
+    },
+    {
+      "q": "Is there parking?",
+      "a": "Yes, we have limited parking in front. Street parking is also nearby."
+    },
+    {
+      "q": "What are your best-selling dishes?",
+      "a": "Our most popular dishes are lechon kawali, sinigang na baboy, and kare-kare."
+    },
+    {
+      "q": "Do you take group or event bookings?",
+      "a": "Yes, for birthdays and company gatherings. Call or text us for packages and pricing."
     }
   ],
-  "tone": "Friendly, helpful, professional."
+  "tone": "Friendly, helpful, professional. Keep answers short."
 }
