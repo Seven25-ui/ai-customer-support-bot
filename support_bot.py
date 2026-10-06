@@ -1,4 +1,4 @@
-"""
+﻿"""
 AI Customer Support Bot (Telegram)
 ----------------------------------
 A customizable customer support chatbot for any business
@@ -44,12 +44,14 @@ logging.basicConfig(
     level=logging.INFO,
 )
 logger = logging.getLogger(__name__)
+# httpx logs full request URLs, which include the Telegram bot token
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-TELEGRAM_TOKEN = os.environ.get("8873449618:AAHoZVR4-zALe7C1k0N8YY85PpQvrN5W1Ik")
-ANTHROPIC_KEY = os.environ.get("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")
+TELEGRAM_TOKEN = (os.environ.get("TELEGRAM_BOT_TOKEN") or "").strip().strip('"')
+ANTHROPIC_KEY = (os.environ.get("ANTHROPIC_API_KEY") or "").strip().strip('"')
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "claude-sonnet-4-6")
 BUSINESS_INFO_FILE = "business_info.json"
 
@@ -173,6 +175,9 @@ def call_claude(messages):
         "messages": messages,
     }
     resp = requests.post(ANTHROPIC_API_URL, headers=headers, json=payload, timeout=30)
+    if not resp.ok:
+        # The response body explains the problem (credits, model name, etc.)
+        logger.error("Claude API returned %s: %s", resp.status_code, resp.text[:500])
     resp.raise_for_status()
     data = resp.json()
     text = "".join(
@@ -188,7 +193,7 @@ def call_claude(messages):
 # ---------------------------------------------------------------------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        f"Hi! I'm the {BUSINESS_INFO['business_name']} Assistant 🤖\n"
+        f"Hi! I'm the {BUSINESS_INFO['business_name']} Assistant \U0001F916\n"
         "Ask me about our hours, location, menu or services.\n"
         "Send /reset anytime to start a new conversation."
     )
@@ -201,6 +206,10 @@ async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Edited messages and other updates have no update.message; ignore them
+    if not update.message or not update.message.text:
+        return
+
     chat_id = update.effective_chat.id
 
     # Simple rate limit: ignore messages that arrive too quickly
