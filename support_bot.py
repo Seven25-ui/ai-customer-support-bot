@@ -48,8 +48,9 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY")
+TELEGRAM_TOKEN = os.environ.get("8873449618:AAHoZVR4-zALe7C1k0N8YY85PpQvrN5W1Ik
+")
+ANTHROPIC_KEY = os.environ.get("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")
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "claude-sonnet-4-6")
 BUSINESS_INFO_FILE = "business_info.json"
 
